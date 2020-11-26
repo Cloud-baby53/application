@@ -44,7 +44,7 @@ def deploy(stack_name, template, parameters):
     def check_stack_status(stack_name):
         try:
             response = client.describe_stacks(
-                StackName='test',
+                StackName=stack_name,
             )['Stacks'][0]['StackStatus']
         except ClientError as e:
             return False
