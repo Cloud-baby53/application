@@ -1,0 +1,42 @@
+AWSTemplateFormatVersion: 2010-09-09
+Resources:
+  VPC:
+    Type: 'AWS::EC2::VPC'
+    Properties:
+      EnableDnsSupport: 'true'
+      EnableDnsHostnames: 'true'
+      CidrBlock: 10.0.0.0/16
+      Tags:
+        - Key: Name
+          Value: GameDayVPC
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: c5dc363c-5b55-4f9f-9d4f-9418740e1b7e
+Metadata:
+  'AWS::CloudFormation::Interface':
+    ParameterGroups:
+      - Label:
+          default: EC2 configuration
+        Parameters:
+          - SSHLocation
+      - Label:
+          default: RDS configuration
+        Parameters:
+          - UsingRDS
+          - RDSEngineType
+      - Label:
+          default: Cache configuration
+        Parameters:
+          - UsingCache
+          - CacheEngineType
+  'AWS::CloudFormation::Designer':
+    c5dc363c-5b55-4f9f-9d4f-9418740e1b7e:
+      size:
+        width: 3840
+        height: 2370
+      position:
+        x: 510
+        'y': 420
+      z: 1
+      embeds:
+        - df41880c-a14c-4ff8-bcb4-1f947ad99dfb
