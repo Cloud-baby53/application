@@ -49,7 +49,7 @@ def deploy(stack_name, template, parameters):
         except ClientError as e:
             return False
         else:
-            if response == 'CREATE_COMPLETE':
+            if response == 'CREATE_COMPLETE' or response == 'UPDATE_COMPLETE':
                 print('[SUCCESS] Stack is already exists & Status is Completed [ Name = %s ]' % stack_name)
                 return True
             else:
