@@ -1,33 +1,50 @@
 import pandas as pd
 import boto3
+import requests
 import time
+import os
 from boto3.dynamodb.conditions import Key
 from botocore.exceptions import ClientError
 
-team_name = 'team2'
-table_name = 'service-table'
-url = 'http://original20010207.s3-website.us-east-2.amazonaws.com/'
+team_name = os.environ['team_name']
+table_name = os.environ['table_name']
+login_url = os.environ['login_url']
+marketplace_url = os.environ['marketplace_url']
 service_type_list = ['swapcaser', 'leeter', 'reverser']
 
 dynamodb = boto3.resource('dynamodb')
 table = dynamodb.Table(table_name)
+
+session = requests.Session()
     
 def lambda_handler(event, context):
+    login_html(login_url)
     for i in range(3):
-        table_data = get_table_html(url)
+        table_data = get_table_html(marketplace_url)
         endpoint_list = get_optimized_endpoint(table_data)
         delete_key_list = get_delete_key()
         put_new_endpoint(endpoint_list, delete_key_list)
         time.sleep(15)
-    
-def get_table_html(url):
+
+def login_html(login_url):
     try:
-        # 指定したエンドポイントのHTMLからtableに関する部分を取得
-        table_data = pd.read_html(url)[0]
+        response = session.post(login_url, {"username": "user01", "password": "password"})
+        print('[Success] I was able to log in to the dashboard.')
+    except Exception as e:
+        print('[Failure] Could not log in to the dashboard.')
+        print('[Reason] %s' % e)
+    
+def get_table_html(marketplace_url):
+    try:
+        after_login = session.get(marketplace_url)
+        after_login.encoding = 'UTF-8'
+        marketplace_html = after_login.text
+        table_data = pd.read_html(marketplace_html)[0]
         print('[Success] Succeeded in acquiring HTML Table data from the specified endpoint.')
         return table_data
     except Exception as e:
         print('[Failure] Failed to get HTML Table data from the specified endpoint.')
+        print('[Reason] %s' % e)
 
 def get_optimized_endpoint(table_data):
     try:
